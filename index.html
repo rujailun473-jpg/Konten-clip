@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Potong Video</title>
+    <title>Clipper Pro - Layout</title>
     <style>
         body { 
             font-family: sans-serif; 
@@ -11,69 +11,66 @@
             padding: 10px; 
             background-color: #121212; 
             color: white;
+            margin: 0;
         }
-        video { 
+        .judul { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #00e5ff; }
+        video { width: 100%; max-width: 400px; border-radius: 8px; background-color: #222; }
+        
+        /* Gaya untuk Kanvas 9:16 */
+        canvas { 
             width: 100%; 
-            max-width: 400px; 
-            border-radius: 10px; 
-            margin-top: 15px;
+            max-width: 280px; /* Ukuran pas untuk layar HP */
             background-color: black; 
+            border: 2px solid #00e5ff;
+            border-radius: 10px;
+            margin-top: 10px;
         }
-        .tombol-waktu {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin: 5px;
+        
+        .grup-tombol { margin: 15px 0; display: flex; justify-content: center; gap: 10px; }
+        .btn-layout {
+            padding: 8px 12px; border-radius: 5px; border: 1px solid #444; 
+            background-color: #2a2a2a; color: white; font-weight: bold;
         }
+        .btn-layout.aktif { background-color: #00e5ff; color: black; }
+        
+        .tombol-waktu { background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; margin: 5px; }
         .tombol-potong { 
-            padding: 15px 25px; 
-            font-size: 16px; 
-            border-radius: 8px; 
-            background-color: #ff0050; 
-            color: white; 
-            border: none; 
-            margin-top: 20px;
-            font-weight: bold;
-            width: 100%;
-            max-width: 400px;
+            padding: 15px; font-size: 16px; border-radius: 8px; background-color: #ff0050; 
+            color: white; border: none; margin-top: 15px; font-weight: bold; width: 100%; max-width: 400px;
         }
-        .kotak-waktu {
-            background-color: #2a2a2a;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: inline-block;
-            text-align: left;
-            width: 100%;
-            max-width: 380px;
-        }
+        .kotak-area { background-color: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <h2>App Potong Video</h2>
+    <div class="judul">Clipper Studio: Auto Layout</div>
     
-    <input type="file" id="inputVideo" accept="video/*">
+    <input type="file" id="inputVideo" accept="video/*" style="margin-bottom:15px;">
     
-    <video id="pemutarVideo" controls></video>
-    
-    <!-- Bagian baru: Penanda waktu potong -->
-    <div class="kotak-waktu">
-        <p>▶️ Mulai: <span id="teksMulai">0.0</span> detik</p>
-        <button id="btnSetMulai" class="tombol-waktu">Set Waktu Mulai</button>
+    <!-- Area Video Asli -->
+    <div class="kotak-area">
+        <p style="margin:0 0 10px 0; color:#aaa; font-size:14px;">1. Video Asli (Gunakan untuk geser waktu)</p>
+        <video id="pemutarVideo" controls></video>
         
-        <hr style="border-color: #444;">
-        
-        <p>⏹️ Selesai: <span id="teksSelesai">0.0</span> detik</p>
-        <button id="btnSetSelesai" class="tombol-waktu">Set Waktu Selesai</button>
+        <div style="margin-top:10px;">
+            <button id="btnSetMulai" class="tombol-waktu">Mulai: <span id="teksMulai">0.0</span>s</button>
+            <button id="btnSetSelesai" class="tombol-waktu">Selesai: <span id="teksSelesai">0.0</span>s</button>
+        </div>
     </div>
 
-    <br>
-    <button id="tombolPotong" class="tombol-potong">✂️ POTONG VIDEO!</button>
+    <!-- Area Preview Vertikal -->
+    <div class="kotak-area">
+        <p style="margin:0 0 10px 0; color:#aaa; font-size:14px;">2. Pilih Gaya Bingkai & Preview (9:16)</p>
+        <div class="grup-tombol">
+            <button id="lay1" class="btn-layout aktif">1 Orang</button>
+            <button id="lay2" class="btn-layout">2 Orang</button>
+            <button id="lay3" class="btn-layout">3 Orang</button>
+        </div>
+        <!-- Kanvas Digital resolusi 720x1280 (Standar HD Shorts/TikTok) -->
+        <canvas id="kanvasVideo" width="720" height="1280"></canvas>
+    </div>
+
+    <button id="tombolPotong" class="tombol-potong">✂️ EXPORT VIDEO VERTICAL!</button>
 
     <script src="app.js"></script>
 </body>
-            </html>
-            
+</html>
