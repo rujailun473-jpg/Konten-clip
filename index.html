@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potong Video</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background-color: #121212; 
+            color: white;
+        }
+        video { 
+            width: 100%; 
+            max-width: 400px; 
+            border-radius: 10px; 
+            margin-top: 15px;
+            background-color: black; 
+        }
+        button { 
+            padding: 15px 25px; 
+            font-size: 16px; 
+            border-radius: 8px; 
+            background-color: #ff0050; 
+            color: white; 
+            border: none; 
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        input[type="file"] { 
+            margin-top: 15px; 
+        }
+    </style>
+</head>
+<body>
+    <h2>App Potong Video</h2>
+    
+    <!-- Tombol untuk memilih video dari galeri HP -->
+    <input type="file" id="inputVideo" accept="video/*">
+    
+    <!-- Layar untuk memutar video -->
+    <video id="pemutarVideo" controls></video>
+    
+    <!-- Tombol untuk memotong -->
+    <br>
+    <button id="tombolInfo">Cek Status</button>
+
+    <!-- Penghubung ke file mesin JavaScript (Langkah 3) -->
+    <script src="app.js"></script>
+</body>
+  </html>
+  
