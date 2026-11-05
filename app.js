@@ -9,16 +9,18 @@ const btnSetMulai = document.getElementById('btnSetMulai');
 const btnSetSelesai = document.getElementById('btnSetSelesai');
 const tombolPotong = document.getElementById('tombolPotong');
 
-// Tombol Layout
 const btnLay1 = document.getElementById('lay1');
 const btnLay2 = document.getElementById('lay2');
 const btnLay3 = document.getElementById('lay3');
 
+// Mengambil elemen Hook yang baru kita buat
+const inputHook = document.getElementById('inputHook');
+const warnaTeks = document.getElementById('warnaTeks');
+
 let waktuMulai = 0;
 let waktuSelesai = 0;
-let layoutAktif = '1orang'; // Default
+let layoutAktif = '1orang'; 
 
-// Mengganti warna tombol layout yang aktif
 function setAktif(tombol, mode) {
     btnLay1.classList.remove('aktif');
     btnLay2.classList.remove('aktif');
@@ -30,7 +32,6 @@ btnLay1.onclick = () => setAktif(btnLay1, '1orang');
 btnLay2.onclick = () => setAktif(btnLay2, '2orang');
 btnLay3.onclick = () => setAktif(btnLay3, '3orang');
 
-// Memasukkan Video
 inputVideo.addEventListener('change', function(event) {
     const fileVideo = event.target.files[0];
     if (fileVideo) {
@@ -39,11 +40,9 @@ inputVideo.addEventListener('change', function(event) {
     }
 });
 
-// Penanda Waktu
 btnSetMulai.onclick = () => { waktuMulai = pemutarVideo.currentTime; teksMulai.innerText = waktuMulai.toFixed(1); };
 btnSetSelesai.onclick = () => { waktuSelesai = pemutarVideo.currentTime; teksSelesai.innerText = waktuSelesai.toFixed(1); };
 
-// MESIN KANVAS: Menggambar video ke format 9:16 secara real-time
 function gambarKeKanvas() {
     if (!pemutarVideo.paused && !pemutarVideo.ended) {
         const vw = pemutarVideo.videoWidth;
@@ -51,62 +50,64 @@ function gambarKeKanvas() {
         const kw = kanvasVideo.width;   // 720
         const kh = kanvasVideo.height;  // 1280
 
-        // Bersihkan kanvas (background hitam)
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, kw, kh);
 
         if (layoutAktif === '1orang') {
-            // Ambil bagian tengah video
             const cropWidth = vh * (9/16);
             const startX = (vw - cropWidth) / 2;
             ctx.drawImage(pemutarVideo, startX, 0, cropWidth, vh, 0, 0, kw, kh);
-            
         } else if (layoutAktif === '2orang') {
-            // Podcast 2 Orang: Belah tengah. Kiri taruh atas, Kanan taruh bawah.
-            ctx.drawImage(pemutarVideo, 0, 0, vw/2, vh, 0, 0, kw, kh/2); // Atas
-            ctx.drawImage(pemutarVideo, vw/2, 0, vw/2, vh, 0, kh/2, kw, kh/2); // Bawah
-            
-            // Garis pembatas di tengah
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, (kh/2) - 2, kw, 4);
-            
+            ctx.drawImage(pemutarVideo, 0, 0, vw/2, vh, 0, 0, kw, kh/2); 
+            ctx.drawImage(pemutarVideo, vw/2, 0, vw/2, vh, 0, kh/2, kw, kh/2); 
+            ctx.fillStyle = "white"; ctx.fillRect(0, (kh/2) - 2, kw, 4);
         } else if (layoutAktif === '3orang') {
-            // Podcast 3 Orang: Belah tiga bagian vertikal (Kiri, Tengah, Kanan)
-            ctx.drawImage(pemutarVideo, 0, 0, vw/3, vh, 0, 0, kw, kh/3); // Atas
-            ctx.drawImage(pemutarVideo, vw/3, 0, vw/3, vh, 0, kh/3, kw, kh/3); // Tengah
-            ctx.drawImage(pemutarVideo, (vw/3)*2, 0, vw/3, vh, 0, (kh/3)*2, kw, kh/3); // Bawah
-            
-            // Garis pembatas
-            ctx.fillStyle = "white";
+            ctx.drawImage(pemutarVideo, 0, 0, vw/3, vh, 0, 0, kw, kh/3); 
+            ctx.drawImage(pemutarVideo, vw/3, 0, vw/3, vh, 0, kh/3, kw, kh/3); 
+            ctx.drawImage(pemutarVideo, (vw/3)*2, 0, vw/3, vh, 0, (kh/3)*2, kw, kh/3); 
+            ctx.fillStyle = "white"; 
             ctx.fillRect(0, (kh/3) - 2, kw, 4);
             ctx.fillRect(0, ((kh/3)*2) - 2, kw, 4);
         }
+
+        // FITUR BARU: Menggambar Teks Hook di Atas Video
+        const teks = inputHook.value.trim(); // Ambil teks yang diketik
+        if (teks !== "") {
+            ctx.font = "bold 65px Arial"; // Ukuran font besar 65px
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            
+            // Memberikan efek garis tepi (outline) warna hitam tebal 
+            // agar teks selalu terbaca walaupun latar belakang videonya cerah
+            ctx.lineJoin = "round";
+            ctx.lineWidth = 12;
+            ctx.strokeStyle = "black";
+            ctx.strokeText(teks, kw / 2, 120); // Ditaruh di jarak 120px dari atas
+            
+            // Mewarnai bagian dalam teks sesuai pilihan warnamu
+            ctx.fillStyle = warnaTeks.value; 
+            ctx.fillText(teks, kw / 2, 120);
+        }
     }
-    // Ulangi terus menerus seperti animasi
     requestAnimationFrame(gambarKeKanvas);
 }
 
-// Mulai menggambar saat video diputar
 pemutarVideo.addEventListener('play', () => {
     gambarKeKanvas();
 });
 
-// PROSES EXPORT / POTONG
 tombolPotong.addEventListener('click', function() {
     if (!pemutarVideo.src || waktuSelesai <= waktuMulai) return alert("Pilih video dan atur waktu yang benar!");
 
-    tombolPotong.innerText = "⏳ Mengekspor Video Vertikal... Jangan ditutup!";
+    tombolPotong.innerText = "⏳ Mengekspor... Jangan ditutup!";
     tombolPotong.disabled = true;
 
     pemutarVideo.currentTime = waktuMulai;
     pemutarVideo.play();
 
-    // 1. Ambil siaran gambar (Video) dari Kanvas (30 FPS)
     const streamGambar = kanvasVideo.captureStream(30);
-    // 2. Ambil siaran Suara (Audio) dari Video Asli
     const streamAudioVideo = pemutarVideo.captureStream ? pemutarVideo.captureStream() : pemutarVideo.mozCaptureStream();
     
-    // 3. Gabungkan Gambar Kanvas + Suara Asli
     const tracksGambar = streamGambar.getVideoTracks();
     const tracksSuara = streamAudioVideo.getAudioTracks();
     const streamGabungan = new MediaStream([...tracksGambar, ...tracksSuara]);
@@ -120,7 +121,7 @@ tombolPotong.addEventListener('click', function() {
         const fileHasil = new Blob(hasilPotongan, { type: 'video/mp4' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(fileHasil);
-        link.download = `Clip_${layoutAktif}_${Math.floor(Math.random()*100)}.mp4`;
+        link.download = `Clipper_${Math.floor(Math.random()*100)}.mp4`;
         link.click();
 
         tombolPotong.innerText = "✂️ EXPORT VIDEO VERTICAL!";
@@ -137,3 +138,4 @@ tombolPotong.addEventListener('click', function() {
         }
     }, 100); 
 });
+    
