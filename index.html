@@ -8,7 +8,7 @@
         body { 
             font-family: sans-serif; 
             text-align: center; 
-            padding: 20px; 
+            padding: 10px; 
             background-color: #121212; 
             color: white;
         }
@@ -19,7 +19,16 @@
             margin-top: 15px;
             background-color: black; 
         }
-        button { 
+        .tombol-waktu {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .tombol-potong { 
             padding: 15px 25px; 
             font-size: 16px; 
             border-radius: 8px; 
@@ -28,27 +37,43 @@
             border: none; 
             margin-top: 20px;
             font-weight: bold;
+            width: 100%;
+            max-width: 400px;
         }
-        input[type="file"] { 
-            margin-top: 15px; 
+        .kotak-waktu {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: inline-block;
+            text-align: left;
+            width: 100%;
+            max-width: 380px;
         }
     </style>
 </head>
 <body>
     <h2>App Potong Video</h2>
     
-    <!-- Tombol untuk memilih video dari galeri HP -->
     <input type="file" id="inputVideo" accept="video/*">
     
-    <!-- Layar untuk memutar video -->
     <video id="pemutarVideo" controls></video>
     
-    <!-- Tombol untuk memotong -->
-    <br>
-    <button id="tombolInfo">Cek Status</button>
+    <!-- Bagian baru: Penanda waktu potong -->
+    <div class="kotak-waktu">
+        <p>▶️ Mulai: <span id="teksMulai">0.0</span> detik</p>
+        <button id="btnSetMulai" class="tombol-waktu">Set Waktu Mulai</button>
+        
+        <hr style="border-color: #444;">
+        
+        <p>⏹️ Selesai: <span id="teksSelesai">0.0</span> detik</p>
+        <button id="btnSetSelesai" class="tombol-waktu">Set Waktu Selesai</button>
+    </div>
 
-    <!-- Penghubung ke file mesin JavaScript (Langkah 3) -->
+    <br>
+    <button id="tombolPotong" class="tombol-potong">✂️ POTONG VIDEO!</button>
+
     <script src="app.js"></script>
 </body>
-  </html>
-  
+            </html>
+            
