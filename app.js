@@ -14,10 +14,13 @@ const btnLay2 = document.getElementById('lay2');
 const btnLay3 = document.getElementById('lay3');
 const inputHook = document.getElementById('inputHook');
 const warnaTeks = document.getElementById('warnaTeks');
-
-// Komponen Fitur Geser Baru
 const geserX = document.getElementById('geserX');
 const areaGeserKamera = document.getElementById('areaGeserKamera');
+
+// Komponen AI Baru
+const inputTopik = document.getElementById('inputTopik');
+const teksPrompt = document.getElementById('teksPrompt');
+const btnSalinAI = document.getElementById('btnSalinAI');
 
 let waktuMulai = 0;
 let waktuSelesai = 0;
@@ -30,7 +33,6 @@ function setAktif(tombol, mode) {
     tombol.classList.add('aktif');
     layoutAktif = mode;
     
-    // Slider geser kamera hanya muncul di mode 1 Orang
     if (mode === '1orang') {
         areaGeserKamera.style.display = 'block';
     } else {
@@ -52,6 +54,40 @@ inputVideo.addEventListener('change', function(event) {
 btnSetMulai.onclick = () => { waktuMulai = pemutarVideo.currentTime; teksMulai.innerText = waktuMulai.toFixed(1); };
 btnSetSelesai.onclick = () => { waktuSelesai = pemutarVideo.currentTime; teksSelesai.innerText = waktuSelesai.toFixed(1); };
 
+// Logika Generator Prompt AI
+btnSalinAI.addEventListener('click', function() {
+    const topik = inputTopik.value.trim();
+    if (topik === "") {
+        alert("Isi dulu topik videonya, ya!");
+        return;
+    }
+
+    // Meracik formula prompt rahasia
+    const formulaPrompt = `Saya sedang mengedit video klip podcast pendek format 9:16 untuk TikTok dan YouTube Shorts. Topik pembahasannya adalah: "${topik}".
+
+Tolong buatkan saya:
+1. 3 pilihan judul tulisan (Hook) maksimal 4-5 kata. Harus sangat provokatif, mengundang klik, dan bikin penasaran di 3 detik pertama.
+2. Caption singkat untuk deskripsi video yang engaging, dilanjutkan dengan Call to Action (CTA) agar penonton follow/komen.
+3. 5 hashtag yang paling relevan dan viral.`;
+
+    // Tampilkan di layar agar bisa dibaca
+    teksPrompt.innerText = formulaPrompt;
+    teksPrompt.style.display = "block";
+
+    // Menyalin ke papan klip (clipboard) HP
+    navigator.clipboard.writeText(formulaPrompt).then(() => {
+        btnSalinAI.innerText = "✅ Tersalin! Buka AI...";
+        
+        // Membuka tab baru ke Google Gemini atau ChatGPT setelah 1.5 detik
+        setTimeout(() => {
+            window.open('https://gemini.google.com/', '_blank');
+            btnSalinAI.innerText = "✨ Racik & Salin Prompt untuk AI";
+            teksPrompt.style.display = "none";
+            inputTopik.value = ""; // Kosongkan input
+        }, 1500);
+    });
+});
+
 function gambarKeKanvas() {
     if (!pemutarVideo.paused && !pemutarVideo.ended) {
         const vw = pemutarVideo.videoWidth;
@@ -64,13 +100,9 @@ function gambarKeKanvas() {
 
         if (layoutAktif === '1orang') {
             const cropWidth = vh * (9/16); 
-            // FITUR BARU: Menghitung posisi berdasarkan Slider
             const maxGeser = vw - cropWidth; 
             let startX = maxGeser * (geserX.value / 100); 
-            
-            // Jaga-jaga agar potongan tidak keluar jalur
             if (startX < 0) startX = 0;
-            
             ctx.drawImage(pemutarVideo, startX, 0, cropWidth, vh, 0, 0, kw, kh);
             
         } else if (layoutAktif === '2orang') {
@@ -86,7 +118,6 @@ function gambarKeKanvas() {
             ctx.fillRect(0, ((kh/3)*2) - 2, kw, 4);
         }
 
-        // Teks Hook
         const teks = inputHook.value.trim(); 
         if (teks !== "") {
             ctx.font = "bold 65px Arial"; 
@@ -149,3 +180,4 @@ tombolPotong.addEventListener('click', function() {
         }
     }, 100); 
 });
+        
