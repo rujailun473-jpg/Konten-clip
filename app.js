@@ -12,10 +12,12 @@ const tombolPotong = document.getElementById('tombolPotong');
 const btnLay1 = document.getElementById('lay1');
 const btnLay2 = document.getElementById('lay2');
 const btnLay3 = document.getElementById('lay3');
-
-// Mengambil elemen Hook yang baru kita buat
 const inputHook = document.getElementById('inputHook');
 const warnaTeks = document.getElementById('warnaTeks');
+
+// Komponen Fitur Geser Baru
+const geserX = document.getElementById('geserX');
+const areaGeserKamera = document.getElementById('areaGeserKamera');
 
 let waktuMulai = 0;
 let waktuSelesai = 0;
@@ -27,6 +29,13 @@ function setAktif(tombol, mode) {
     btnLay3.classList.remove('aktif');
     tombol.classList.add('aktif');
     layoutAktif = mode;
+    
+    // Slider geser kamera hanya muncul di mode 1 Orang
+    if (mode === '1orang') {
+        areaGeserKamera.style.display = 'block';
+    } else {
+        areaGeserKamera.style.display = 'none';
+    }
 }
 btnLay1.onclick = () => setAktif(btnLay1, '1orang');
 btnLay2.onclick = () => setAktif(btnLay2, '2orang');
@@ -47,16 +56,23 @@ function gambarKeKanvas() {
     if (!pemutarVideo.paused && !pemutarVideo.ended) {
         const vw = pemutarVideo.videoWidth;
         const vh = pemutarVideo.videoHeight;
-        const kw = kanvasVideo.width;   // 720
-        const kh = kanvasVideo.height;  // 1280
+        const kw = kanvasVideo.width;   
+        const kh = kanvasVideo.height;  
 
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, kw, kh);
 
         if (layoutAktif === '1orang') {
-            const cropWidth = vh * (9/16);
-            const startX = (vw - cropWidth) / 2;
+            const cropWidth = vh * (9/16); 
+            // FITUR BARU: Menghitung posisi berdasarkan Slider
+            const maxGeser = vw - cropWidth; 
+            let startX = maxGeser * (geserX.value / 100); 
+            
+            // Jaga-jaga agar potongan tidak keluar jalur
+            if (startX < 0) startX = 0;
+            
             ctx.drawImage(pemutarVideo, startX, 0, cropWidth, vh, 0, 0, kw, kh);
+            
         } else if (layoutAktif === '2orang') {
             ctx.drawImage(pemutarVideo, 0, 0, vw/2, vh, 0, 0, kw, kh/2); 
             ctx.drawImage(pemutarVideo, vw/2, 0, vw/2, vh, 0, kh/2, kw, kh/2); 
@@ -70,21 +86,16 @@ function gambarKeKanvas() {
             ctx.fillRect(0, ((kh/3)*2) - 2, kw, 4);
         }
 
-        // FITUR BARU: Menggambar Teks Hook di Atas Video
-        const teks = inputHook.value.trim(); // Ambil teks yang diketik
+        // Teks Hook
+        const teks = inputHook.value.trim(); 
         if (teks !== "") {
-            ctx.font = "bold 65px Arial"; // Ukuran font besar 65px
+            ctx.font = "bold 65px Arial"; 
             ctx.textAlign = "center";
             ctx.textBaseline = "top";
-            
-            // Memberikan efek garis tepi (outline) warna hitam tebal 
-            // agar teks selalu terbaca walaupun latar belakang videonya cerah
             ctx.lineJoin = "round";
             ctx.lineWidth = 12;
             ctx.strokeStyle = "black";
-            ctx.strokeText(teks, kw / 2, 120); // Ditaruh di jarak 120px dari atas
-            
-            // Mewarnai bagian dalam teks sesuai pilihan warnamu
+            ctx.strokeText(teks, kw / 2, 120); 
             ctx.fillStyle = warnaTeks.value; 
             ctx.fillText(teks, kw / 2, 120);
         }
@@ -138,4 +149,3 @@ tombolPotong.addEventListener('click', function() {
         }
     }, 100); 
 });
-    
